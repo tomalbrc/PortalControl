@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "de.tomalbrc.portalcontrol.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "NetherPortalBlockMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

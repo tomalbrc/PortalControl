@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "portalcontrol",
+  "version": "${version}",
+  "name": "PortalControl",
+  "description": "",
+  "authors": [],
+  "contact": {
+    "repo": "PortalControl"
+  },
+  "license": "MIT",
+  "icon": "assets/portalcontrol/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "de.tomalbrc.portalcontrol.PortalControl"
+    ]
+  },
+  "mixins": [
+    "portalcontrol.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
