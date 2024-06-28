@@ -2,6 +2,7 @@ package de.tomalbrc.portalcontrol;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
@@ -10,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
@@ -27,14 +29,17 @@ public class ModConfig {
     // entries
     //
 
+    public static class PortalControlEntry {
+        public String sourceDimension = "minecraft:the_end";
+        public String targetDimension = "minecraft:overworld";
 
-    public String sourceDimension = "minecraft:the_end";
-    public String targetDimension = "minecraft:overworld";
+        public List<Integer> targetPosition = List.of(0, 150, 0);
 
-    public List<Integer> targetPosition = List.of(0, 150, 0);
+        public float xRot;
+        public float yRot;
+    }
 
-    public float xRot;
-    public float yRot;
+    public List<PortalControlEntry> controlEntryList = List.of(new PortalControlEntry());
 
     //
     // end entries
@@ -52,7 +57,7 @@ public class ModConfig {
             try {
                 if (CONFIG_FILE_PATH.toFile().createNewFile()) {
                     FileOutputStream stream = new FileOutputStream(CONFIG_FILE_PATH.toFile());
-                    stream.write(gson.toJson(instance).getBytes(StandardCharsets.UTF_8));
+                    stream.write(gson.toJson(instance.controlEntryList).getBytes(StandardCharsets.UTF_8));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -61,7 +66,9 @@ public class ModConfig {
         }
 
         try {
-            ModConfig.instance = gson.fromJson(new FileReader(ModConfig.CONFIG_FILE_PATH.toFile()), ModConfig.class);
+            ModConfig.instance = new ModConfig();
+            Type typeOfT = TypeToken.getParameterized(List.class, PortalControlEntry.class).getType();
+            ModConfig.instance.controlEntryList = gson.fromJson(new FileReader(ModConfig.CONFIG_FILE_PATH.toFile()), typeOfT);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

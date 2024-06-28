@@ -26,14 +26,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class NetherPortalBlockMixin {
     @Inject(method = "getPortalDestination", at = @At("HEAD"), cancellable = true)
     public void getPortalDestination(ServerLevel serverLevel, Entity entity, BlockPos blockPos, CallbackInfoReturnable<DimensionTransition> cir) {
-        if (serverLevel.dimension().location().equals(ResourceLocation.parse(ModConfig.getInstance().sourceDimension))) {
-            var serverLevel2 = pc$getWorld(serverLevel.getServer(), ResourceLocation.parse(ModConfig.getInstance().targetDimension));
+        for (var entry: ModConfig.getInstance().controlEntryList) {
+            if (serverLevel.dimension().location().equals(ResourceLocation.parse(entry.sourceDimension))) {
+                var serverLevel2 = pc$getWorld(serverLevel.getServer(), ResourceLocation.parse(entry.targetDimension));
 
-            if (serverLevel2 != null) {
-                Vec3 speed = new Vec3(0,0,0);
-                Vec3 pos = new Vec3(ModConfig.getInstance().targetPosition.get(0),ModConfig.getInstance().targetPosition.get(1),ModConfig.getInstance().targetPosition.get(2));
-                DimensionTransition dt = new DimensionTransition(serverLevel2, pos, speed, ModConfig.getInstance().yRot, ModConfig.getInstance().xRot, DimensionTransition.DO_NOTHING);
-                cir.setReturnValue(dt);
+                if (serverLevel2 != null) {
+                    Vec3 speed = new Vec3(0,0,0);
+                    Vec3 pos = new Vec3(entry.targetPosition.get(0),entry.targetPosition.get(1),entry.targetPosition.get(2));
+                    DimensionTransition dt = new DimensionTransition(serverLevel2, pos, speed, entry.yRot, entry.xRot, DimensionTransition.DO_NOTHING);
+                    cir.setReturnValue(dt);
+                    return;
+                }
             }
         }
     }
