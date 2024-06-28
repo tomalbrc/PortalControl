@@ -3,7 +3,6 @@ package de.tomalbrc.portalcontrol;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.ResourceLocation;
 
@@ -17,10 +16,10 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class ModConfig {
-    private static Path CONFIG_FILE_PATH = FabricLoader.getInstance().getConfigDir().resolve("portalcontrol.json");
+    private static final Path CONFIG_FILE_PATH = FabricLoader.getInstance().getConfigDir().resolve("portalcontrol.json");
     private static ModConfig instance;
 
-    private static Gson gson = new GsonBuilder()
+    private static final Gson gson = new GsonBuilder()
             .registerTypeHierarchyAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .setPrettyPrinting()
             .create();
@@ -56,8 +55,9 @@ public class ModConfig {
             instance = new ModConfig();
             try {
                 if (CONFIG_FILE_PATH.toFile().createNewFile()) {
-                    FileOutputStream stream = new FileOutputStream(CONFIG_FILE_PATH.toFile());
-                    stream.write(gson.toJson(instance.controlEntryList).getBytes(StandardCharsets.UTF_8));
+                    try (FileOutputStream stream = new FileOutputStream(CONFIG_FILE_PATH.toFile())) {
+                        stream.write(gson.toJson(instance.controlEntryList).getBytes(StandardCharsets.UTF_8));
+                    }
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
